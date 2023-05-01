@@ -1,0 +1,40 @@
+A2
+import numpy as np
+
+class KNNClassifier:
+    def __init__(self,n_neighbours=3) -> None:
+        self.n_neighbours=n_neighbours
+    def fit(self,X,y):
+        self.X=X
+        self.y=y
+    def predict(self, X_test):
+        predictions = []
+        for x in X_test:
+            distances = []
+            for i, x_train in enumerate(self.X):
+                dist = np.sqrt(np.sum((x - x_train)**2))
+                distances.append((i, dist))
+            distances.sort(key=lambda x: x[1])
+            k_nearest = [self.y[i] for i, _ in distances[:self.n_neighbours]]
+            prediction = max(set(k_nearest), key=k_nearest.count)
+            predictions.append(prediction)
+        return predictions
+**
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+X,y=load_iris(return_X_y=True)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2,random_state=42)
+**
+knn = KNNClassifier()
+knn.fit(X_train,y_train)
+**
+y_pred=knn.predict(X_test)
+**
+from sklearn.metrics import confusion_matrix, accuracy_score
+cm = confusion_matrix(y_test, y_pred)
+print(cm)
+accuracy_score(y_test, y_pred)
+**
+import seaborn as sns
+sns.heatmap(cm,annot = True,cmap='Blues')
+**

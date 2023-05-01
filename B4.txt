@@ -1,0 +1,31 @@
+B4
+import pandas as pd
+df = pd.read_csv('Iris.csv')
+df.head(2)
+**
+df.drop(['Id',],inplace=True,axis=1)
+df.head(2)
+**
+from sklearn.preprocessing import LabelEncoder
+lb = LabelEncoder()
+df['Species']=lb.fit_transform(df['Species'])
+df.tail()
+**
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.model_selection import train_test_split
+x_train,x_test,y_train,y_test=train_test_split(df.drop(['Species'],axis=1),df['Species'],test_size=0.2,random_state=42)
+model =MultinomialNB()
+model.fit(x_train,y_train)
+Model.classes_
+**
+y_pred=model.predict(x_test)
+from sklearn.metrics import confusion_matrix,accuracy_score,f1_score
+acc =  accuracy_score(y_pred,y_test)
+print("Accuracy : ",acc)
+**
+print(y_test.shape)
+labels = [0,1,2]
+cm=confusion_matrix(y_pred,y_test,labels=labels)
+import seaborn as sns
+sns.heatmap(cm,annot=True,cmap='Blues')
+**

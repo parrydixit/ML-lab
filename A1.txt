@@ -1,0 +1,95 @@
+A1
+import pandas as pd
+df= pd.read_csv('titanic.csv')
+df.head(2)
+**
+df.drop(['Name','Sex','Siblings/Spouses Aboard','Parents/Children Aboard'],axis=1,inplace=True)
+df.head(2)
+**
+from sklearn.model_selection import train_test_split
+X_train,X_test,y_train,y_test = train_test_split(df.drop(['Survived'],axis=1),df['Survived'],test_size=0.2,random_state=42)
+from sklearn.neighbors import KNeighborsClassifier
+knn = KNeighborsClassifier(n_neighbors=7)
+knn.fit(X_train,y_train)
+y_pred = knn.predict(X_test)
+**
+from sklearn.metrics import confusion_matrix
+import numpy as np
+tn, fp, fn, tp = confusion_matrix(y_test, y_pred).ravel()
+def accuracy(tp, tn, fp, fn):
+    return (tp + tn) / (tp + tn + fp + fn)
+def precision(tp, fp):
+    return tp / (tp + fp)
+def recall(tp, fn):
+    return tp / (tp + fn)
+def f1_scoresssss(tp, fp, fn):
+    p = precision(tp, fp)
+    r = recall(tp, fn)
+    return 2 * (p * r) / (p + r)
+def mcc(tp, tn, fp, fn):
+    num = (tp * tn) - (fp * fn)
+    denom = np.sqrt((tp + fp) * (tp + fn) * (tn + fp) * (tn + fn))
+return num / denom
+def specificity(tn, fp):
+    return tn / (tn + fp)
+def npv(tn, fn):
+    return tn / (tn + fn)
+acc = accuracy(tp,tn,fp,fn)
+prec = precision(tp, fp)
+rec = recall(tp, fn)
+f1 = f1_scoresssss(tp,fp,fn)
+mcc = mcc(tp, tn, fp, fn)
+spec = specificity(tn, fp)
+npv = npv(tn, fn)
+**
+print(f'Accuracy: {acc:.4f}')
+print(f'Precision: {prec:.4f}')
+print(f'Recall: {rec:.4f}')
+print(f'F1-Score: {f1:.4f}')
+print(f'MCC: {mcc:.4f}')
+print(f'Specificity: {spec:.4f}')
+print(f'Negative Predictive Value: {npv:.4f}')
+**
+from sklearn.metrics import accuracy_score,precision_score,recall_score,f1_score
+accuracy = accuracy_score(y_test, y_pred)
+precision = precision_score(y_test, y_pred)
+recall = recall_score(y_test, y_pred)
+f1 = f1_score(y_test, y_pred)
+print("In-Built calculated")
+print("Accuracy:", accuracy)
+print("Precision:", precision)
+print("Recall:", recall)
+print("F1-score:", f1)
+**
+import seaborn as sns
+import matplotlib.pyplot as plt
+cm = confusion_matrix(y_test, y_pred)
+sns.heatmap(cm, annot=True,cmap='Blues')
+plt.xlabel('Predicted')
+plt.ylabel('True')
+plt.show()
+**
+from sklearn.metrics import precision_recall_curve
+precision, recall, _ = precision_recall_curve(y_test, y_pred)
+plt.step(recall, precision, color='g', alpha=0.2, where='post')
+plt.fill_between(recall, precision, alpha=0.2, color='g', step='post')
+plt.xlabel('Recall')
+plt.ylabel('Precision')
+plt.ylim([0.0, 1.0])
+plt.xlim([0.0, 1.0])
+plt.title('Precision-Recall curve')
+plt.show()
+**
+from sklearn.metrics import roc_curve,roc_auc_score
+print("sklearn ROC AUC Score A:", roc_auc_score(y_test,y_pred))
+fpr, tpr, _ = roc_curve(y_test, y_pred)
+plt.figure()
+plt.plot(fpr, tpr, color='darkorange',
+ lw=2, label='ROC curve')
+plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
+plt.xlim([0.0, 1.0])
+plt.ylim([0.0, 1.05])
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+plt.title('Receiver operating characteristic example')
+**
